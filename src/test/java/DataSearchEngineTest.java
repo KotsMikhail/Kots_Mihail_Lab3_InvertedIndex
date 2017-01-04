@@ -2,20 +2,20 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
+import java.util.SortedSet;
 
 public class DataSearchEngineTest {
 
     @Test
     public void simpleTest() {
         String fileName = "src/test/test1.txt";
-        DataSearchEngine google = new DataSearchEngine();
         try {
-            Data d = new FileData(fileName);
-            google.indexData(d);
+            DataSource[] data = new DataSource[1];
+            data[0] = new FileDataSource(fileName);
+            DataSearchEngine google = new DataSearchEngine.Builder(data).getEngine();
             String[] request = {"it", "is", "what", "it", "is"};
-            LinkedList<Data> res = google.searchWords(request);
-            Assert.assertTrue(res.contains(d));
+            SortedSet<DataSource> res = google.searchWords(request);
+            Assert.assertTrue(res.contains(data[0]));
             request = new String[]{"it", "is", "what", "it", "is", "asdf"};
             res = google.searchWords(request);
             Assert.assertTrue(res.size() == 0);
@@ -28,15 +28,14 @@ public class DataSearchEngineTest {
     public void advancedTest() {
         String fileName1 = "src/test/test1.txt";
         String fileName2 = "src/test/test2.txt";
-        DataSearchEngine google = new DataSearchEngine();
         try {
-            Data d1 = new FileData(fileName1);
-            Data d2 = new FileData(fileName2);
-            google.indexData(d1);
-            google.indexData(d2);
+            DataSource[] data = new DataSource[2];
+            data[0] = new FileDataSource(fileName1);
+            data[1] = new FileDataSource(fileName2);
+            DataSearchEngine google = new DataSearchEngine.Builder(data).getEngine();
             String[] request = {"it", "is", "what"};
-            LinkedList<Data> res = google.searchWords(request);
-            Assert.assertTrue(res.contains(d1) && res.contains(d2));
+            SortedSet<DataSource> res = google.searchWords(request);
+            Assert.assertTrue(res.contains(data[0]) && res.contains(data[1]));
             request = new String[]{"it", "is", "what", "banana"};
             res = google.searchWords(request);
             Assert.assertTrue(res.size() == 0);
@@ -50,20 +49,18 @@ public class DataSearchEngineTest {
         String fileName1 = "src/test/test1.txt";
         String fileName2 = "src/test/test2.txt";
         String fileName3 = "src/test/test3.txt";
-        DataSearchEngine google = new DataSearchEngine();
         try {
-            Data d1 = new FileData(fileName1);
-            Data d2 = new FileData(fileName2);
-            Data d3 = new FileData(fileName2);
-            google.indexData(d1);
-            google.indexData(d2);
-            google.indexData(d3);
+            DataSource[] data = new DataSource[3];
+            data[0] = new FileDataSource(fileName1);
+            data[1] = new FileDataSource(fileName2);
+            data[2] = new FileDataSource(fileName3);
+            DataSearchEngine google = new DataSearchEngine.Builder(data).getEngine();
             String[] request = {"it", "is", "what"};
-            LinkedList<Data> res = google.searchWords(request);
-            Assert.assertTrue(res.contains(d1) && res.contains(d2));
+            SortedSet<DataSource> res = google.searchWords(request);
+            Assert.assertTrue(res.contains(data[0]) && res.contains(data[1]));
             request = new String[]{"it", "is"};
             res = google.searchWords(request);
-            Assert.assertTrue(res.contains(d1) && res.contains(d2) && res.contains(d3));
+            Assert.assertTrue(res.contains(data[0]) && res.contains(data[1]) && res.contains(data[2]));
             request = new String[]{"it", "is", "what", "banana"};
             res = google.searchWords(request);
             Assert.assertTrue(res.size() == 0);
